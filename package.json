@@ -28,5 +28,11 @@
     "jest": "^26.1.0",
     "require-self": "^0.2.3",
     "standard": "^14.3.4"
+  },
+  "dependencies": {
+    "mineflayer": "^2.23.0",
+    "mineflayer-pathfinder": "^1.0.6",
+    "mineflayer-statemachine": "^1.5.1",
+    "vec3": "^0.1.5"
   }
 }
