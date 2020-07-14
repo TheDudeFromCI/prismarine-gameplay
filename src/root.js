@@ -1,15 +1,17 @@
 const sm = require('mineflayer-statemachine');
+const collectBlock = require('./collectBlock');
+const collectItems = require('./collectItems');
 
 /**
  * This is the root of the state machine used to control the bot.
  */
-function buildStateMachine(bot)
+function buildStateMachine(bot, triggers)
 {
     const idleState = createIdleState();
 
-    const transitions = [
-
-    ];
+    const transitions = [];
+    loadState(transitions, idleState, triggers, collectItems.createCollectItemsState(bot));
+    loadState(transitions, idleState, triggers, collectBlock.createCollectBlockState(bot));
 
     const nestedStateMachine = new sm.NestedStateMachine(transitions, idleState);
     nestedStateMachine.stateName = 'Root';
@@ -18,14 +20,35 @@ function buildStateMachine(bot)
     return stateMachine;
 }
 
-/**
- * Creates a standard idle state.
- */
 function createIdleState()
 {
     const state = new sm.BehaviorIdle();
     state.stateName = 'Waiting for Command';
     return state;
+}
+
+function loadState(transitions, idleState, triggers, state)
+{
+    const enter = sm.StateTransition({
+        parent: idleState,
+        child: state
+    });
+
+    const exit = new sm.StateTransition({
+        parent: state,
+        child: idleState,
+        shouldTransition: () => state.isFinished(),
+    });
+
+    transitions.push(enter);
+    transitions.push(exit);
+
+    triggers.addState({
+        name: state.stateName,
+        state: state,
+        enter: enter,
+        exit: exit
+    });
 }
 
 module.exports = { buildStateMachine };
