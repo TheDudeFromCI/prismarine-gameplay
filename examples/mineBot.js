@@ -12,25 +12,39 @@ if (process.argv.length < 4 || process.argv.length > 6)
 const bot = mineflayer.createBot({
     host: process.argv[2],
     port: parseInt(process.argv[3]),
-    username: process.argv[4] ? process.argv[4] : 'Player',
+    username: process.argv[4] ? process.argv[4] : 'mineBot',
     password: process.argv[5]
 });
 
 bot.loadPlugin(pathfinder)
 bot.loadPlugin(gameplay);
 
+bot.once('spawn', () => bot.gameplay.configure({
+    webserver: true,
+}));
+
 bot.on('chat', (username, message) =>
 {
     if (username === bot.username) return;
-    switch (message)
+
+    const command = message.split(' ')
+    const pos = bot.players[username] ? bot.players[username].entity.position : null;
+
+    switch (true)
     {
-        case 'dig':
-            bot.gameplay.targets.position = bot.entity.position.offset(1, 0, 0);
-            bot.gameplay.triggerState('Collect Block');
+        case /^dig \d+ \d+ \d+$/.test(message):
+            bot.gameplay.mineBlockAt(command[1], command[2], command[3]);
+            break;
+
+        case /^dig here$/.test(message):
+            if (pos)
+                bot.gameplay.mineBlockAt(pos.x, pos.y - 1, pos.z);
+            else
+                bot.chat("I can't see you.");
             break;
 
         case 'stop':
-            bot.gameplay.forceExitState('Collect Block');
+            bot.gameplay.stopAll();
             break;
     }
 })

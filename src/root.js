@@ -5,7 +5,7 @@ const collectItems = require('./collectItems');
 /**
  * This is the root of the state machine used to control the bot.
  */
-function buildStateMachine(bot, triggers)
+function buildStateMachine(bot, triggers, settings)
 {
     const idleState = createIdleState();
 
