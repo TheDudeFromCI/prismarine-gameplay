@@ -18,6 +18,7 @@ const bot = mineflayer.createBot({
 
 bot.loadPlugin(pathfinder)
 bot.loadPlugin(gameplay);
+sm.globalSettings.debugMode = true;
 
 bot.once('spawn', () => bot.gameplay.configure({
     webserver: true,
