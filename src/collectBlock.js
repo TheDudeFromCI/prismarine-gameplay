@@ -43,7 +43,7 @@ function createCollectBlockState(bot, settings = {})
 
     ];
 
-    const nestedStateMachine = new sm.NestedStateMachine(transitions, tryCollectBlock);
+    const nestedStateMachine = new sm.NestedStateMachine(transitions, tryCollectBlock, finished);
     nestedStateMachine.stateName = 'Collect Block';
     return nestedStateMachine;
 }
@@ -66,13 +66,6 @@ function createMineBlockState(bot)
 {
     const state = new sm.BehaviorMineBlock(bot, bot.gameplay.targets);
     state.stateName = 'Mine Block';
-    return state;
-}
-
-function createCollectItemsState(bot)
-{
-    const state = createCollectItemsState(bot);
-    state.stateName = 'Collect Dropped Item';
     return state;
 }
 

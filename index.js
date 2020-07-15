@@ -1,17 +1,18 @@
 const { buildStateMachine } = require('./src/root');
+const { StateMachineWebserver } = require('mineflayer-statemachine');
 
-const ActionTriggers
+class ActionTriggers
 {
     constructor()
     {
         this.states = [];
     }
-
+    
     addState(state)
     {
         this.states.push(state);
     }
-
+    
     triggerState(name)
     {
         for (const state of this.states)
@@ -47,12 +48,18 @@ function inject(bot)
     bot.gameplay.targets = {};
     
     const triggers = new ActionTriggers();
-    bot.gameplay.triggerState = triggers.triggerState;
-    bot.gameplay.forceExitState = triggers.forceExitState;
+    bot.gameplay.triggerState = (name) => triggers.triggerState(name);
+    bot.gameplay.forceExitState = (name) => triggers.forceExitState(name);
 
-    bot.once('spawn', () => bot.gameplay.statemachine = buildStateMachine(bot, triggers));
+    bot.once('spawn', () =>
+    {
+        bot.gameplay.statemachine = buildStateMachine(bot, triggers);
+
+        const webserver = new StateMachineWebserver(bot, bot.gameplay.statemachine);
+        webserver.startServer();
+    });
 }
 
-modules.exports = {
+module.exports = {
     gameplay: inject
 };

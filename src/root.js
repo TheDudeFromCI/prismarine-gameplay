@@ -29,7 +29,7 @@ function createIdleState()
 
 function loadState(transitions, idleState, triggers, state)
 {
-    const enter = sm.StateTransition({
+    const enter = new sm.StateTransition({
         parent: idleState,
         child: state
     });

@@ -1,5 +1,7 @@
 const mineflayer = require('mineflayer');
-const gameplay = require('./..');
+const pathfinder = require('mineflayer-pathfinder').pathfinder;
+const gameplay = require('./..').gameplay;
+const sm = require('mineflayer-statemachine');
 
 if (process.argv.length < 4 || process.argv.length > 6)
 {
@@ -14,6 +16,7 @@ const bot = mineflayer.createBot({
     password: process.argv[5]
 });
 
+bot.loadPlugin(pathfinder)
 bot.loadPlugin(gameplay);
 
 bot.on('chat', (username, message) =>
@@ -22,13 +25,12 @@ bot.on('chat', (username, message) =>
     switch (message)
     {
         case 'dig':
-            bot.gameplay.triggers.position = bot.entity.position.offset(1, 0, 0);
+            bot.gameplay.targets.position = bot.entity.position.offset(1, 0, 0);
             bot.gameplay.triggerState('Collect Block');
-            sayItems();
             break;
 
         case 'stop':
-            dig();
+            bot.gameplay.forceExitState('Collect Block');
             break;
     }
 })
